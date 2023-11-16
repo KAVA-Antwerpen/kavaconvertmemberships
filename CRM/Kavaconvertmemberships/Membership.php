@@ -2,7 +2,7 @@
 
 class CRM_Kavaconvertmemberships_Membership {
 
-  public static function convertPasAfgestudeerd() {
+  public static function convertPasAfgestudeerd($contactId = NULL) {
     $currentYear = date('Y');
 
     // afgestudeerden op basis van relatie ophalen
@@ -10,8 +10,13 @@ class CRM_Kavaconvertmemberships_Membership {
       ->addWhere('relationship_type_id', '=', CRM_Kavaconvertmemberships_RelationshipType::IS_AFGESTUDEERD_LID)
       ->addWhere('start_date', '>=', "$currentYear-01-01")
       ->addWhere('end_date', '<=', "$currentYear-12-31")
-      ->addWhere('is_active', '=', 1)
-      ->execute();
+      ->addWhere('is_active', '=', 1);
+
+    if ($contactId) {
+      $relationships->addWhere('contact_id_a', '=', $contactId);
+    }
+
+    $relationships->execute();
 
     foreach ($relationships as $relationship) {
       // verwijder klaargezette lidm. 1 jaar afgestudeerd
@@ -54,7 +59,7 @@ class CRM_Kavaconvertmemberships_Membership {
     }
   }
 
-  public static function convert1JaarAfgestudeerd() {
+  public static function convert1JaarAfgestudeerd($contactId = NULL) {
     $currentYear = date('Y');
 
     // afgestudeerden op basis van relatie ophalen
@@ -62,8 +67,13 @@ class CRM_Kavaconvertmemberships_Membership {
       ->addWhere('relationship_type_id', '=', CRM_Kavaconvertmemberships_RelationshipType::IS_1_JAAR_AFGESTUDEERD_LID)
       ->addWhere('start_date', '>=', "$currentYear-01-01")
       ->addWhere('end_date', '<=', "$currentYear-12-31")
-      ->addWhere('is_active', '=', 1)
-      ->execute();
+      ->addWhere('is_active', '=', 1);
+
+    if ($contactId) {
+      $relationships->addWhere('contact_id_a', '=', $contactId);
+    }
+
+    $relationships->execute();
 
     foreach ($relationships as $relationship) {
       // kijk of er een lidm. 1 jaar afgestudeerd is
@@ -119,15 +129,20 @@ class CRM_Kavaconvertmemberships_Membership {
     }
   }
 
-  public static function convertMeewerkendLid() {
+  public static function convertMeewerkendLid($contactId = NULL) {
     $currentYear = (int)date('Y');
     $nextYear = $currentYear + 1;
 
     // meerwerkende leden (we gaan ervan uit dat convert1JaarAfgestudeerd() al uitgevoerd werd
     $memberships = \Civi\Api4\Membership::get(FALSE)
       ->addWhere('membership_type_id', '=', CRM_Kavaconvertmemberships_MembershipType::MEEWERKEND_1_JR_AFGEST)
-      ->addWhere('end_date', '>', "$currentYear-12-31")
-      ->execute();
+      ->addWhere('end_date', '>', "$currentYear-12-31");
+
+    if ($contactId) {
+      $memberships->addWhere('contact_id', '=', $contactId);
+    }
+
+    $memberships->execute();
 
     // eindig op einde van het jaar en creeer nieuw lidm.
     foreach ($memberships as $membership) {
