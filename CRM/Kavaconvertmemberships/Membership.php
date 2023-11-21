@@ -209,13 +209,44 @@ class CRM_Kavaconvertmemberships_Membership {
     }
   }
 
+  public static function convertStagiairs($contactId = NULL) {
+    $currentYear = date('Y');
+
+    $memTypeStagiair = CRM_Kavaconvertmemberships_MembershipType::get('KAVA stagiair lid');
+    $relationships = self::getRelationshipsStagiair($contactId);
+    foreach ($relationships as $relationship) {
+      \Civi\Api4\Membership::create(FALSE)
+        ->addValue('contact_id', $relationship['contact_id_a'])
+        ->addValue('membership_type_id', $memTypeStagiair)
+        ->addValue('status_id', CRM_Kavaconvertmemberships_MembershipStatus::get('Actief'))
+        ->addValue('join_date', $relationship['start_date'])
+        ->addValue('start_date', $relationship['start_date'])
+        ->addValue('end_date', $relationship['end_date'])
+        ->addValue('Facturatie.Gratis_', 1)
+        ->execute();
+    }
+  }
+
   private static function getRelationshipsWithType($relType, $year, $isActive, $contactId = NULL) {
-    // afgestudeerden op basis van relatie ophalen
     $relationships = \Civi\Api4\Relationship::get(FALSE)
       ->addWhere('relationship_type_id', '=', $relType)
       ->addWhere('start_date', '>=', "$year-01-01")
       ->addWhere('end_date', '<=', "$year-12-31")
       ->addWhere('is_active', '=', $isActive);
+
+    if ($contactId) {
+      $relationships = $relationships->addWhere('contact_id_a', '=', $contactId);
+    }
+
+    $relationships = $relationships->execute();
+
+    return $relationships;
+  }
+
+  private function getRelationshipsStagiair($contactId = NULL) {
+    $relationships = \Civi\Api4\Relationship::get(FALSE)
+      ->addWhere('relationship_type_id', '=', CRM_Kavaconvertmemberships_RelationshipType::IS_STAGIAIR_LID_VAN)
+      ->addWhere('is_active', '=', 1);
 
     if ($contactId) {
       $relationships = $relationships->addWhere('contact_id_a', '=', $contactId);

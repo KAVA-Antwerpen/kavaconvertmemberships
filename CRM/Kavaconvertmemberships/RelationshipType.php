@@ -9,4 +9,6 @@ class CRM_Kavaconvertmemberships_RelationshipType {
 
   public const IS_AFGESTUDEERD_LID = 47;
   public const IS_1_JAAR_AFGESTUDEERD_LID = 49;
+
+  public const IS_STAGIAIR_LID_VAN = 116;
 }
