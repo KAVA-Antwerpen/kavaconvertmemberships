@@ -5,18 +5,7 @@ class CRM_Kavaconvertmemberships_Membership {
   public static function convertPasAfgestudeerd($contactId = NULL) {
     $currentYear = date('Y');
 
-    // afgestudeerden op basis van relatie ophalen
-    $relationships = \Civi\Api4\Relationship::get(FALSE)
-      ->addWhere('relationship_type_id', '=', CRM_Kavaconvertmemberships_RelationshipType::IS_AFGESTUDEERD_LID)
-      ->addWhere('start_date', '>=', "$currentYear-01-01")
-      ->addWhere('end_date', '<=', "$currentYear-12-31")
-      ->addWhere('is_active', '=', 1);
-
-    if ($contactId) {
-      $relationships = $relationships->addWhere('contact_id_a', '=', $contactId);
-    }
-
-    $relationships = $relationships->execute();
+    $relationships = self::getRelationshipsWithType(CRM_Kavaconvertmemberships_RelationshipType::IS_AFGESTUDEERD_LID, $currentYear, 1, $contactId);
 
     foreach ($relationships as $relationship) {
       // verwijder klaargezette lidm. 1 jaar afgestudeerd
@@ -60,22 +49,22 @@ class CRM_Kavaconvertmemberships_Membership {
   }
 
   public static function convert1JaarAfgestudeerd($contactId = NULL) {
-    $currentYear = date('Y');
+    $currentYear = (int)date('Y');
+    $lastYear = $currentYear - 1;
 
-    // afgestudeerden op basis van relatie ophalen
-    $relationships = \Civi\Api4\Relationship::get(FALSE)
-      ->addWhere('relationship_type_id', '=', CRM_Kavaconvertmemberships_RelationshipType::IS_1_JAAR_AFGESTUDEERD_LID)
-      ->addWhere('start_date', '>=', "$currentYear-01-01")
-      ->addWhere('end_date', '<=', "$currentYear-12-31")
-      ->addWhere('is_active', '=', 1);
-
-    if ($contactId) {
-      $relationships = $relationships->addWhere('contact_id_a', '=', $contactId);
-    }
-
-    $relationships = $relationships->execute();
+    $relationships = self::getRelationshipsWithType(CRM_Kavaconvertmemberships_RelationshipType::IS_1_JAAR_AFGESTUDEERD_LID, $currentYear, 1, $contactId);
 
     foreach ($relationships as $relationship) {
+      // kijk of er een relatie pas afgestudeerd is (voor echte startdatum lidmaatschap
+      $relationshipPasAfgestudeerd = self::getRelationshipsWithType(CRM_Kavaconvertmemberships_RelationshipType::IS_AFGESTUDEERD_LID, $lastYear, 0, $relationship['contact_id_a']));
+      $relationshipPasAfgestudeerd = $relationshipPasAfgestudeerd->first();
+      if ($relationshipPasAfgestudeerd) {
+        $joinDate = $relationshipPasAfgestudeerd['start_date'];
+      }
+      else {
+        $joinDate = $relationship['start_date'];
+      }
+
       // kijk of er een lidm. 1 jaar afgestudeerd is
       $mem1year = \Civi\Api4\Membership::get(FALSE)
         ->addWhere('contact_id', '=', $relationship['contact_id_a'])
@@ -103,8 +92,8 @@ class CRM_Kavaconvertmemberships_Membership {
         // pas de status aan en datums aan
         \Civi\Api4\Membership::update(FALSE)
           ->addValue('status_id', CRM_Kavaconvertmemberships_MembershipStatus::get('1 jaar afgestudeerd'))
-          ->addValue('join_date', $relationship['start_date'])
-          ->addValue('start_date', $relationship['start_date'])
+          ->addValue('join_date', $joinDate)
+          ->addValue('start_date', $joinDate)
           ->addValue('is_override', TRUE)
           ->addValue('Facturatie.Gratis_', 0)
           ->addValue('Facturatie.Betaler', $betaler)
@@ -118,8 +107,8 @@ class CRM_Kavaconvertmemberships_Membership {
           ->addValue('contact_id', $relationship['contact_id_a'])
           ->addValue('membership_type_id', CRM_Kavaconvertmemberships_MembershipType::WERKENDE_LEDEN)
           ->addValue('status_id', CRM_Kavaconvertmemberships_MembershipStatus::get('1 jaar afgestudeerd'))
-          ->addValue('join_date', $relationship['start_date'])
-          ->addValue('start_date', $relationship['start_date'])
+          ->addValue('join_date', $joinDate)
+          ->addValue('start_date', $joinDate)
           ->addValue('end_date', '3000-01-01')
           ->addValue('is_override', TRUE)
           ->addValue('Facturatie.Gratis_', 0)
@@ -163,5 +152,22 @@ class CRM_Kavaconvertmemberships_Membership {
         ->addValue('Facturatie.Product', $membership['Facturatie.Product'])
         ->execute();
     }
+  }
+
+  private static function getRelationshipsWithType($relType, $year, $isActive, $contactId = NULL) {
+    // afgestudeerden op basis van relatie ophalen
+    $relationships = \Civi\Api4\Relationship::get(FALSE)
+      ->addWhere('relationship_type_id', '=', $relType)
+      ->addWhere('start_date', '>=', "$year-01-01")
+      ->addWhere('end_date', '<=', "$year-12-31")
+      ->addWhere('is_active', '=', $isActive);
+
+    if ($contactId) {
+      $relationships = $relationships->addWhere('contact_id_a', '=', $contactId);
+    }
+
+    $relationships = $relationships->execute();
+
+    return $relationships;
   }
 }
