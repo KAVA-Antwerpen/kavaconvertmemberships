@@ -157,15 +157,17 @@ class CRM_Kavaconvertmemberships_Membership {
         ->addValue('join_date', $membership['join_date'])
         ->addValue('start_date', "$nextYear-01-01")
         ->addValue('end_date', '3000-01-01')
-        ->execute();
-
-      // do custom fields with update due to bug in api v4
-      \Civi\Api4\Membership::update(FALSE)
+        ->addValue('is_override', TRUE)
         ->addValue('Facturatie.Betaler', $membership['Facturatie.Betaler'])
         ->addValue('Facturatie.Gratis_', $membership['Facturatie.Gratis_'])
         ->addValue('Facturatie.Product', $membership['Facturatie.Product'])
-        ->addWhere('id', '=', $m['id'])
         ->execute();
+
+      // do custom fields with update due to bug in api v4
+      /*
+      \Civi\Api4\Membership::update(FALSE)
+        ->addWhere('id', '=', $m['id'])
+        ->execute();*/
     }
   }
 
