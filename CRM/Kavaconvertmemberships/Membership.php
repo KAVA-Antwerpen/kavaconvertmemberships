@@ -150,16 +150,21 @@ class CRM_Kavaconvertmemberships_Membership {
         ->addWhere('id', '=', $membership['id'])
         ->execute();
 
-      \Civi\Api4\Membership::create(FALSE)
+      $m = \Civi\Api4\Membership::create(FALSE)
         ->addValue('contact_id', $membership['contact_id'])
         ->addValue('membership_type_id', CRM_Kavaconvertmemberships_MembershipType::get('KAVA werkelijk lid'))
         ->addValue('status_id', CRM_Kavaconvertmemberships_MembershipStatus::get('Actief'))
         ->addValue('join_date', $membership['join_date'])
         ->addValue('start_date', "$nextYear-01-01")
         ->addValue('end_date', '3000-01-01')
+        ->execute();
+
+      // do custom fields with update due to bug in api v4
+      \Civi\Api4\Membership::update(FALSE)
         ->addValue('Facturatie.Betaler', $membership['Facturatie.Betaler'])
         ->addValue('Facturatie.Gratis_', $membership['Facturatie.Gratis_'])
         ->addValue('Facturatie.Product', $membership['Facturatie.Product'])
+        ->addWhere('id', '=', $m['id'])
         ->execute();
     }
   }
