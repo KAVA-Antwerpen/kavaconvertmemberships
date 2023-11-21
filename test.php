@@ -1,6 +1,9 @@
 <?php
 
 try {
+  CRM_Kavaconvertmemberships_Main::start();
+
+  /*
   if (empty($argv[1])) {
     die("Missing argument: contact ID");
   }
@@ -13,6 +16,7 @@ try {
   CRM_Kavaconvertmemberships_Membership::convertMeewerkendLid($contactId);
   CRM_Kavaconvertmemberships_Membership::convertCorresponderendLid($contactId);
   CRM_Kavaconvertmemberships_Membership::convertStagiairs($contactId);
+  */
 }
 catch (Exception $e) {
   echo "\nFile: " . $e->getFile();
