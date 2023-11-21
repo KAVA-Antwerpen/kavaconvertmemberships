@@ -16,6 +16,7 @@ class CRM_Kavaconvertmemberships_Membership {
 
       // kijk of er een werkend lidm. is
       $membership = \Civi\Api4\Membership::get(FALSE)
+        ->addSelect('*', 'custom.*')
         ->addWhere('membership_type_id', '=', CRM_Kavaconvertmemberships_MembershipType::WERKENDE_LEDEN)
         ->addWhere('contact_id', '=', $relationship['contact_id_a'])
         ->execute()
@@ -90,6 +91,7 @@ class CRM_Kavaconvertmemberships_Membership {
 
       // kijk of er een werkend lidm. is
       $membership = \Civi\Api4\Membership::get(FALSE)
+        ->addSelect('*', 'custom.*')
         ->addWhere('membership_type_id', '=', CRM_Kavaconvertmemberships_MembershipType::WERKENDE_LEDEN)
         ->addWhere('contact_id', '=', $relationship['contact_id_a'])
         ->execute()
@@ -131,6 +133,7 @@ class CRM_Kavaconvertmemberships_Membership {
 
     // meerwerkende leden (we gaan ervan uit dat convert1JaarAfgestudeerd() al uitgevoerd werd
     $memberships = \Civi\Api4\Membership::get(FALSE)
+      ->addSelect('*', 'custom.*')
       ->addWhere('membership_type_id', '=', CRM_Kavaconvertmemberships_MembershipType::MEEWERKEND_1_JR_AFGEST)
       ->addWhere('end_date', '>', "$currentYear-12-31");
 
