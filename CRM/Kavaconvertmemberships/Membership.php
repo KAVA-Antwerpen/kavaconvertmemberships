@@ -163,11 +163,8 @@ class CRM_Kavaconvertmemberships_Membership {
         ->addValue('Facturatie.Product', $membership['Facturatie.Product'])
         ->execute();
 
-      // do custom fields with update due to bug in api v4
-      /*
-      \Civi\Api4\Membership::update(FALSE)
-        ->addWhere('id', '=', $m['id'])
-        ->execute();*/
+      // reset is override
+      CRM_Core_DAO::executeQuery("udpate membership set is_override = 0 where id = " . $m['id']);
     }
   }
 
