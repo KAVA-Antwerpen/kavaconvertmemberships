@@ -72,6 +72,7 @@ class CRM_Kavaconvertmemberships_Membership {
 
       // kijk of er een lidm. 1 jaar afgestudeerd is
       $mem1year = \Civi\Api4\Membership::get(FALSE)
+        ->addSelect('*', 'custom.*')
         ->addWhere('contact_id', '=', $relationship['contact_id_a'])
         ->addWhere('membership_type_id', '=', CRM_Kavaconvertmemberships_MembershipType::MEEWERKEND_1_JR_AFGEST)
         ->execute()
