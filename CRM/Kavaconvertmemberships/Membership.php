@@ -164,7 +164,7 @@ class CRM_Kavaconvertmemberships_Membership {
         ->execute();
 
       // reset is override
-      CRM_Core_DAO::executeQuery("udpate civicrm_membership set is_override = 0 where id = " . $m['id']);
+      CRM_Core_DAO::executeQuery("update civicrm_membership set is_override = 0 where id = " . $m['id']);
     }
   }
 
