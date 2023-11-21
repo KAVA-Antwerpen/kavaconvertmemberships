@@ -160,7 +160,7 @@ class CRM_Kavaconvertmemberships_Membership {
         ->addValue('is_override', TRUE)
         ->addValue('Facturatie.Betaler', $membership['Facturatie.Betaler'])
         ->addValue('Facturatie.Gratis_', $membership['Facturatie.Gratis_'])
-        ->addValue('Facturatie.Product', $membership['Facturatie.Product'])
+        ->addValue('Facturatie.Product', '&BV500020')
         ->execute();
 
       // reset is override
