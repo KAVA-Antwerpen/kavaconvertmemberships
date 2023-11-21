@@ -13,10 +13,10 @@ class CRM_Kavaconvertmemberships_Membership {
       ->addWhere('is_active', '=', 1);
 
     if ($contactId) {
-      $relationships->addWhere('contact_id_a', '=', $contactId);
+      $relationships = $relationships->addWhere('contact_id_a', '=', $contactId);
     }
 
-    $relationships->execute();
+    $relationships = $relationships->execute();
 
     foreach ($relationships as $relationship) {
       // verwijder klaargezette lidm. 1 jaar afgestudeerd
@@ -70,10 +70,10 @@ class CRM_Kavaconvertmemberships_Membership {
       ->addWhere('is_active', '=', 1);
 
     if ($contactId) {
-      $relationships->addWhere('contact_id_a', '=', $contactId);
+      $relationships = $relationships->addWhere('contact_id_a', '=', $contactId);
     }
 
-    $relationships->execute();
+    $relationships = $relationships->execute();
 
     foreach ($relationships as $relationship) {
       // kijk of er een lidm. 1 jaar afgestudeerd is
@@ -139,10 +139,10 @@ class CRM_Kavaconvertmemberships_Membership {
       ->addWhere('end_date', '>', "$currentYear-12-31");
 
     if ($contactId) {
-      $memberships->addWhere('contact_id', '=', $contactId);
+      $memberships = $memberships->addWhere('contact_id', '=', $contactId);
     }
 
-    $memberships->execute();
+    $memberships = $memberships->execute();
 
     // eindig op einde van het jaar en creeer nieuw lidm.
     foreach ($memberships as $membership) {
