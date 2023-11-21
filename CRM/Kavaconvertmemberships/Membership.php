@@ -56,7 +56,12 @@ class CRM_Kavaconvertmemberships_Membership {
 
     foreach ($relationships as $relationship) {
       // kijk of er een relatie pas afgestudeerd is (voor echte startdatum lidmaatschap
-      $relationshipPasAfgestudeerd = self::getRelationshipsWithType(CRM_Kavaconvertmemberships_RelationshipType::IS_AFGESTUDEERD_LID, $lastYear, 0, $relationship['contact_id_a']));
+      $relationshipPasAfgestudeerd = self::getRelationshipsWithType(
+        CRM_Kavaconvertmemberships_RelationshipType::IS_AFGESTUDEERD_LID,
+        $lastYear,
+        0,
+        $relationship['contact_id_a']);
+
       $relationshipPasAfgestudeerd = $relationshipPasAfgestudeerd->first();
       if ($relationshipPasAfgestudeerd) {
         $joinDate = $relationshipPasAfgestudeerd['start_date'];
