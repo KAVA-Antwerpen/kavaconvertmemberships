@@ -117,6 +117,7 @@ class CRM_Kavaconvertmemberships_Membership {
           ->addValue('end_date', '3000-01-01')
           ->addValue('is_override', TRUE)
           ->addValue('Facturatie.Gratis_', 0)
+          ->addValue('Facturatie.Betaler', $betaler)
           ->addValue('Facturatie.Product', '&BV500021')
           ->execute();
       }
