@@ -4,6 +4,8 @@ class CRM_Kavaconvertmemberships_MembershipType {
   public const WERKENDE_LEDEN = 17;
   public const MEEWERKEND_1_JR_AFGEST = 18;
   public const CORRESPONDERENDE_LEDEN = 19;
+  public const TOEGETREDEN_LEDEN = 27;
+  public const APOTHEEKTEAMLIDM = 29;
 
   private $cache = [];
 
